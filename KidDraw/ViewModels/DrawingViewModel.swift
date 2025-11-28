@@ -10,6 +10,8 @@ class DrawingViewModel: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
     
+    let commandManager = CommandManager()
+    
     init(document: DrawingDocument) {
         self.strokes = document.strokes
         
@@ -30,7 +32,8 @@ class DrawingViewModel: ObservableObject {
 
     func finishStroke() {
         if let stroke = currentStroke {
-            strokes.append(stroke)
+            let cmd = AddStrokeCommand(stroke: stroke, model: self)
+            commandManager.perform(cmd)
         }
         currentStroke = nil
     }

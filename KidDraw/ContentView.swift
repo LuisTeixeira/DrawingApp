@@ -13,6 +13,21 @@ struct ContentView: View {
     var body: some View {
         DrawingCanvas(model: model)
             .toolbar {
+                ToolbarItemGroup {
+                    Button {
+                        model.commandManager.undo()
+                    } label: {
+                        Image(systemName: "arrow.uturn.backward")
+                    }
+                    .keyboardShortcut("z", modifiers: .command)
+                    
+                    Button {
+                        model.commandManager.redo()
+                    } label: {
+                        Image(systemName: "arrow.uturn.forward")
+                    }
+                    .keyboardShortcut("z", modifiers: [.command, .shift])
+                }
                 
                 ToolbarItemGroup {
                     ForEach(ColorPallete.colors, id: \.self) { color in
@@ -46,7 +61,8 @@ struct ContentView: View {
                 
                 ToolbarItem {
                     Button("Clear") {
-                        model.strokes.removeAll()
+                        let clearAllCmd = ClearAllCommand(model: model)
+                        model.commandManager.perform(clearAllCmd)
                     }
                 }
             }
