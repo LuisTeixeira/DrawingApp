@@ -1,17 +1,18 @@
 class ClearAllCommand: DrawingCommand {
     private let previousStrokes: [Stroke]
-    private weak var model: DrawingViewModel?
+    private weak var page: Page?
     
-    init(model: DrawingViewModel) {
-        self.previousStrokes = model.strokes
-        self.model = model
+    init(page: Page?) {
+        self.previousStrokes = page?.strokes ?? []
+        self.page = page
     }
     
     func execute() {
-        model?.strokes.removeAll()
+        page?.strokes.removeAll()
     }
     
     func undo() {
-        model?.strokes = previousStrokes
+        page?.strokes = previousStrokes
     }
 }
+

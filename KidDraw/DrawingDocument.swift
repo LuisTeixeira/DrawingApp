@@ -8,32 +8,32 @@ extension UTType {
 
 class DrawingDocument: ReferenceFileDocument, ObservableObject {
     
-    @Published var strokes: [Stroke] = []
+    @Published var pages: [Page] = []
 
     static var readableContentTypes: [UTType] { [.kiddraw] }
     
     required init() {
-        strokes = []
+        pages = []
     }
     
     required init(configuration: ReadConfiguration) throws {
         if let data = configuration.file.regularFileContents {
-            strokes = try JSONDecoder().decode([Stroke].self, from: data)
+            pages = try JSONDecoder().decode([Page].self, from: data)
         } else {
-            strokes = []
+            pages = []
         }
     }
     
     func snapshot(contentType: UTType) throws -> DrawingDocument {
         let copy = DrawingDocument()
-        copy.strokes = self.strokes
+        copy.pages = self.pages
         return copy
     }
     
     func fileWrapper(snapshot: DrawingDocument,
                      configuration: WriteConfiguration) throws -> FileWrapper {
         do {
-            let data = try JSONEncoder().encode(snapshot.strokes)
+            let data = try JSONEncoder().encode(snapshot.pages)
             return FileWrapper(regularFileWithContents: data)
         } catch {
             print("ENCODING ERROR: ", error)

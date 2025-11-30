@@ -1,6 +1,6 @@
 class AddStrokeCommand: DrawingCommand {
     private let stroke: Stroke
-    private weak var model: DrawingViewModel?
+    private var model: DrawingViewModel?
     
     init(stroke: Stroke, model: DrawingViewModel) {
         self.stroke = stroke

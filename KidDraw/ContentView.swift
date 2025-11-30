@@ -8,21 +8,23 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var model: DrawingViewModel
+    @StateObject var model: MultiPageDocument
+    @StateObject var commandManager = CommandManager()
+    @StateObject var strokeStyleState = StrokeStyleState()
     
     var body: some View {
-        DrawingCanvas(model: model)
+        MultiPageCavasView(document: model, commandManager: commandManager, strokeStyleState: strokeStyleState)
             .toolbar {
                 ToolbarItemGroup {
                     Button {
-                        model.commandManager.undo()
+                        commandManager.undo()
                     } label: {
                         Image(systemName: "arrow.uturn.backward")
                     }
                     .keyboardShortcut("z", modifiers: .command)
                     
                     Button {
-                        model.commandManager.redo()
+                        commandManager.redo()
                     } label: {
                         Image(systemName: "arrow.uturn.forward")
                     }
@@ -31,8 +33,8 @@ struct ContentView: View {
                 
                 ToolbarItemGroup {
                     ForEach(ColorPallete.colors, id: \.self) { color in
-                        ColorCircleButton(color: color, isSelected: model.currentColor == color) {
-                            model.currentColor = color
+                        ColorCircleButton(color: color, isSelected: strokeStyleState.currentColor == color) {
+                            strokeStyleState.currentColor = color
                         }
                     }
                 }
@@ -41,9 +43,9 @@ struct ContentView: View {
                     ForEach(BrushType.allCases, id: \.self) { brush in
                         BrushTypeButton(
                             brush: brush,
-                            isSelected: model.currentBrush == brush
+                            isSelected: strokeStyleState.currentBrush == brush
                         ) {
-                            model.currentBrush = brush
+                            strokeStyleState.currentBrush = brush
                         }
                     }
                 }
@@ -52,17 +54,17 @@ struct ContentView: View {
                     ForEach(BrushSize.allCases, id: \.self) { size in
                         BrushSizeButton(
                             size: size,
-                            isSelected: model.currentSize == size
+                            isSelected: strokeStyleState.currentSize == size
                         ) {
-                            model.currentSize = size
+                            strokeStyleState.currentSize = size
                         }
                     }
                 }
                 
                 ToolbarItem {
                     Button("Clear") {
-                        let clearAllCmd = ClearAllCommand(model: model)
-                        model.commandManager.perform(clearAllCmd)
+                        let clearAllCmd = ClearAllCommand(page: model.selectedPage)
+                        commandManager.perform(clearAllCmd)
                     }
                 }
             }

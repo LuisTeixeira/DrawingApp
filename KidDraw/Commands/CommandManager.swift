@@ -1,9 +1,10 @@
 import Foundation
+import Combine
 
-class CommandManager {
+class CommandManager: ObservableObject {
     
-    private var undoStack: [DrawingCommand] = []
-    private var redoStack: [DrawingCommand] = []
+    @Published private var undoStack: [DrawingCommand] = []
+    @Published private var redoStack: [DrawingCommand] = []
     
     func perform(_ command: DrawingCommand) {
         command.execute()

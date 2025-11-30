@@ -4,26 +4,28 @@ import Combine
 class DrawingViewModel: ObservableObject {
     @Published var strokes: [Stroke] = []
     @Published var currentStroke: Stroke?
-    @Published var currentColor: Color = .black
-    @Published var currentBrush: BrushType = .pen
-    @Published var currentSize: BrushSize = .medium
-
+    
+    let commandManager: CommandManager
+    let strokeStyleState: StrokeStyleState
+    
     private var cancellables = Set<AnyCancellable>()
     
-    let commandManager = CommandManager()
-    
-    init(document: DrawingDocument) {
-        self.strokes = document.strokes
+    init(page: Page, commandManager: CommandManager, strokeStyleState: StrokeStyleState) {
+        self.strokes = page.strokes
+        self.commandManager = commandManager
+        self.strokeStyleState = strokeStyleState
         
         $strokes
-            .sink{ newStrokes in
-                document.strokes = newStrokes
+            .sink { newStrokes in
+                page.strokes = newStrokes
             }
             .store(in: &cancellables)
+        
     }
+    
 
     func startStroke(at point: CGPoint) {
-        currentStroke = Stroke(points: [point], color: currentColor, lineWidth: currentSize.rawValue, brush: currentBrush)
+        currentStroke = Stroke(points: [point], color: strokeStyleState.currentColor, lineWidth: strokeStyleState.currentSize.rawValue, brush: strokeStyleState.currentBrush)
     }
 
     func addPoint(_ point: CGPoint) {
