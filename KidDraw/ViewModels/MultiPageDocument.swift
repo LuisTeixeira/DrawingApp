@@ -21,10 +21,20 @@ class MultiPageDocument: ObservableObject {
         pages.first(where: {$0.id == selectedPageId})
     }
     
-    func addPage() {
+    func page(at index: Int) -> Page? {
+        guard pages.indices.contains(index) else {return nil}
+        return pages[index]
+    }
+    
+    func addPage() -> Page {
         let page = Page()
         pages.append(page)
         selectedPageId = page.id
+        return page
+    }
+    
+    func insert( page: Page, at index: Int) {
+        self.pages.insert(page, at: index)
     }
     
     func removePage(at index: Int) {
@@ -35,6 +45,12 @@ class MultiPageDocument: ObservableObject {
             selectedPageId = pages[newIndex].id
         } else {
             selectedPageId = nil
+        }
+    }
+    
+    func removePage(page: Page) {
+        if let index = pages.firstIndex(where: {$0.id == page.id}) {
+            pages.remove(at: index)
         }
     }
     

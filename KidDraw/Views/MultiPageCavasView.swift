@@ -15,16 +15,17 @@ struct MultiPageCavasView: View {
                         .padding(4)
                 }
                 .onDelete { indexSet in
-                    indexSet.forEach { document.removePage(at: $0)}
-                }
-                .onMove { indices, newOffset in
-                    document.movePage(from: indices, to: newOffset)
+                    indexSet.forEach {
+                        let removePageCommand = RemovePageCommand(document: document, pageIndex: $0)
+                        commandManager.perform(removePageCommand)
+                    }
                 }
             }
             .toolbar {
                 ToolbarItem(placement: .automatic) {
                     Button("New Page") {
-                        document.addPage()
+                        let addPageCommand = AddPageCommand(document: document)
+                        commandManager.perform(addPageCommand)
                     }
                     .keyboardShortcut("n", modifiers: [.command, .shift])
                 }
